@@ -26,8 +26,8 @@ st.markdown('''1. The city is looking for a deep analysis of the Bike-sharing se
 st.markdown('''2. The city is looking for a prediction model that can predict total number of bicycle users on an hourly basis. It is said to to help with optimization of bike provisioning and will optimize the costs incurred from the outsourcing transportation company.''')
 
 
-#Import data
-data = pd.read_csv("/Users/clement/Documents/Classes/Python/bike-sharing_hourly.csv")
+#Import data from repository
+data = pd.read_csv("https://raw.githubusercontent.com/Traibot/Streamlit_assignment/main/bike-sharing_hourly.csv")
 
 # get two tabs for the page EDA and ML 
 tab1, tab2 = st.tabs(["EDA", "ML"])
@@ -72,7 +72,7 @@ with tab2:
 
    #Bin hr into 4 categories: Late Night/Early Morning, Morning, Afternoon/Evening, Night
    st.subheader("Bin hr into 4 categories: Late Night/Early Morning, Morning, Afternoon/Evening, Night")
-   st.markdown("Since <em>hr</em> has 24 unique values, its better to bin this field")
+   st.markdown("Since hr has 24 unique values, its better to bin this field")
    st.code('''def bin_hr(hr):
                   if hr >= 0 and hr < 6:
                      return 'Late Night/Early Morning'
@@ -95,29 +95,13 @@ with tab2:
    st.markdown("We want to check if there is any pronounced difference between registered and casual users. This will help us decide if we should build separate predictive models for this dataset or just build a single predictive model keeping cnt as the target variable")
 
 
-   #Plot distribution of registered and casual users
-   fig, ax = plt.subplots(figsize=(6,2))
-   sns.distplot(data['registered'], ax=ax, label='Registered')
-   sns.distplot(data['casual'], ax=ax, label='Casual')
-   #sns.distplot(data['cnt'], ax=ax, label='Total')
-   ax.set_title('Distribution of Registered and Casual Users')
-   ax.set_xlabel('Number of Users')
-   ax.set_ylabel('Density')
-   ax.legend()
-   plt.show()
-   st.pyplot(fig)
+   # upload the image
+   st.image("https://github.com/Traibot/Streamlit_assignment/blob/main/pic1.png?raw=true") 
    st.markdown(''' The distribution of users is right-skewed. This implies that a transformation might be needed to make the distribution more normal.
    For further clarity, we also check the proportion of casual users vs. registered users''')
 
    #Pie chart of registered and casual users
-   st.subheader("Pie chart of registered and casual users")
-   fig, ax = plt.subplots(figsize=(6,2))
-   labels = ['Registered', 'Casual']
-   ax.pie(data[['registered', 'casual']].sum(), labels=labels, autopct='%1.1f%%', startangle=90)
-   ax.set_title('Registered vs. Casual Users')
-   plt.show()
-   st.pyplot(fig)
-
+   st.image("https://github.com/Traibot/Streamlit_assignment/blob/main/Pic2.png?raw=true") 
    
 
    st.title("Minimum Viable Model: Linear Regression")
@@ -127,25 +111,7 @@ with tab2:
                data['registered'] = transformer.transform(data['registered'].values.reshape(-1,1))
                data['casual'] = transformer.transform(data['casual'].values.reshape(-1,1))''', language='python')
 
-   from sklearn.preprocessing import FunctionTransformer
-   transformer = FunctionTransformer(np.log1p, inverse_func=np.expm1, validate=True)
-
-   data['cnt'] = transformer.transform(data['cnt'].values.reshape(-1,1))
-   data['registered'] = transformer.transform(data['registered'].values.reshape(-1,1))
-   data['casual'] = transformer.transform(data['casual'].values.reshape(-1,1))
-
-   
-   st.markdown("We will be predicting only total users and not registered or casual users for the MVM, for the sake of simplicity.")
-   #Plot log-transformed distribution of total users
-   st.subheader("Plot log-transformed distribution of total users")
-   fig, ax = plt.subplots(figsize=(10,6))
-   sns.distplot(data['cnt'], ax=ax)
-   ax.set_title('Log-transformed Distribution of Total Users')
-   ax.set_xlabel('Number of Users')
-   ax.set_ylabel('Density')
-   plt.show()
-   st.pyplot(fig)
-   st.markdown('''We can see that the distribution is much more normalised now and thus should help our predictive MVM''')
+   st.image("https://github.com/Traibot/Streamlit_assignment/blob/main/Pic3.png?raw=true") 
 
 
    st.markdown('''We decide to drop a few features carrying irrelevant (to predict total users) information or similar information as other features from the input features set: X
@@ -179,7 +145,7 @@ with tab2:
    st.markdown('''- Fitting the model''')
    st.markdown('''- Plotting the predictions on the test data''')
    # get the pic1.png 
-   st.image("/Users/clement/Documents/Classes/Python/pic1.png", width=700)
+   st.image("https://github.com/Traibot/Streamlit_assignment/blob/main/Pic4.png?raw=true")
 
    st.markdown('''- Inverse transforming y to calculate MAE''')
    st.markdown('''Train score (MAE):  85.66''')
