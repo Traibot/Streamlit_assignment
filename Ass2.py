@@ -91,13 +91,6 @@ with tab1:
                                  labels = ['0-5', '6-10', '11-15', '16-20', '21-25', '26-30', '31-35', '36-40', '41-45', '46-50'])
 
 
-   # plot the histogram
-   fig = px.histogram(eda_df, x = 'atemp_bins', color = 'atemp_bins', title = 'Histogram of felt temperature')
-   st.plotly_chart(fig)
-
-
-
-
    # We continue by plotting how (perceived) temperature affects user count.
    atemp_data = eda_df[['cnt', 'atemp_bins']]
    atemp_data_hist = px.histogram(atemp_data, x='atemp_bins', y='cnt', category_orders=dict(atemp_bins=['0-5', '6-10', '11-15', '16-20', '21-25', '26-30', '31-35', '36-40', '41-45', '46-50']))
@@ -137,8 +130,10 @@ with tab1:
    # We run a correlation matrix on humidity and usage
    hum_use = hum_use[['cnt', 'hum']]
    hum_use.corr()
+
    # get the correlation matrix on humidity and usage 
    st.subheader('Correlation Matrix')
+   # display it as a heatmap
    st.write(hum_use.corr())
 
 
@@ -269,60 +264,255 @@ with tab2:
 
 
    # upload the image
-   st.image("https://github.com/Traibot/Streamlit_assignment/blob/main/pic1.png?raw=true") 
+   st.image("https://github.com/Traibot/Streamlit_assignment/blob/main/ML1.png?raw=true") 
    st.markdown(''' The distribution of users is right-skewed. This implies that a transformation might be needed to make the distribution more normal.
    For further clarity, we also check the proportion of casual users vs. registered users''')
 
    #Pie chart of registered and casual users
-   st.image("https://github.com/Traibot/Streamlit_assignment/blob/main/Pic2.png?raw=true") 
+   st.image("https://github.com/Traibot/Streamlit_assignment/blob/main/ML2.png?raw=true") 
+
+   
+   
+   st.title("Deciding between temp and atemp, mnth and season")
+   data2 = data.copy()
+   data2 = data2.drop(['instant', 'dteday', 'hr'], axis = 1)
+   cat_var = data2.select_dtypes(include = ['object']).columns
+   data2 = pd.get_dummies(data2, columns = cat_var, drop_first = False)
+   data3=data2.corr()['casual'].abs().sort_values(ascending = False)
+   
+   # get the data next to each other
+   col1, col2 = st.columns(2)
+   with col1:
+      st.subheader("Correlation between casual users and other variables")
+      st.write(data3)
+   with col2:
+      st.subheader("Correlation between registered users and other variables")
+      data4=data2.corr()['registered'].abs().sort_values(ascending = False)
+      st.write(data4)
    
 
-   st.title("Minimum Viable Model: Linear Regression")
-   st.subheader('''To deal with the skewness, we decide to try transforming the target variable cnt
-   Using *FunctionTransformer* from *sklearn*, we define a log transform for the target while defining the inverse transform (exponential) function for when we make the predictions''')
-   st.code('''data['cnt'] = transformer.transform(data['cnt'].values.reshape(-1,1))
-               data['registered'] = transformer.transform(data['registered'].values.reshape(-1,1))
-               data['casual'] = transformer.transform(data['casual'].values.reshape(-1,1))''', language='python')
-
-   st.image("https://github.com/Traibot/Streamlit_assignment/blob/main/Pic3.png?raw=true") 
-
+   st.title("Minimum Viable Model: Random Forest Regression")
+   st.markdown('''To deal with the skewness, we decide to try transforming the target variables casual and registered
+ Using *FunctionTransformer* from *sklearn*, we define a log transform for the target while defining the inverse transform (exponential) function for when we make the predictions''')
+   st.markdown('''Define FunctionTransformer from sklearn.preprocessing to transform data''')
 
    st.markdown('''We decide to drop a few features carrying irrelevant (to predict total users) information or similar information as other features from the input features set: X
-   temp gives the actual temperature of the day but users are more likely to make a decision based on the feeling temperature atemp
-   seasonis just a categorised version of mnth and opting for it over the latter could lead our model to lose useful predictive power''')
+   temp gives the actual temperature of the day and that has a bigger influence than atemp
+   season is just a categorised version of mnth and opting for it could help our model perform better
+   All this is verified by the above correlation analysis''')
+
+   st.markdown("Create two X and y sets: X_cas and y_cas for casual users and X_reg and y_reg for registered users")
+   st.code('''X_cas = data.drop(['instant', 'cnt', 'casual', 'registered', 'dteday', 'hr', 'atemp', 'mnth'], axis = 1)
+   y_cas = data[['casual']]
+
+   X_reg = data.drop(['instant', 'cnt', 'casual', 'registered', 'dteday', 'hr', 'atemp', 'mnth'], axis = 1)
+   y_reg = data[['registered']]''', language='python')
 
    st.markdown("We dummy encode the categorical variables")
-   st.markdown("- Extract categorical variables")
-   st.markdown("- Dummy encode categorical variables")
 
-   st.subheader("Using *Recursive Feature Elimination*, we also decide to extract the most important features for our MVM")
+   st.markdown("Using *Recursive Feature Elimination*, we also decide to extract the most important features for our MVM")
 
    st.markdown("Recursive Feature Selection ")
    st.code('''NUM_FEATURES = 5
-   model = LinearRegression()
+   model = RandomForestRegressor()
    rfe_stand = RFE(model, step=NUM_FEATURES)''', language='python')
 
-   st.markdown('''Std Model Feature Ranking: [1 1 1 4 4 4 2 1 2 4 3 3 1 1 2 1 3 1 1 3 2 3 1 1 1 4 1 1 2]
-   Standardized Model Score with selected features is: 0.707041 (0.000000)''')
+   st.markdown('''
+   * Cas: Std Model Feature Ranking: [1 1 1 1 2 4 1 4 3 4 4 3 3 3 1 4 3 1 1 1 1]
+   * Reg: Std Model Feature Ranking: [1 1 1 1 2 4 1 4 3 4 4 3 3 3 1 4 3 1 1 1 1]
+   * Cas: Standardized Model Score with selected features is: -10.168658 (0.000000)
+   * Reg: Standardized Model Score with selected features is: 0.903461 (0.000000)''')
 
-   st.markdown('''Most important features (RFE): ['yr' 'atemp' 'hum' 'mnth_Jan' 'mnth_Nov' 'mnth_Oct' 'holiday_Yes'
-   'weekday_Sat' 'weekday_Sun' 'workingday_Yes' 'weathersit_Heavy Rain'
-   'weathersit_Light Snow' 'hr_cat_Late Night/Early Morning'
-   'hr_cat_Morning']''')
+   st.markdown('''
+   Cas: Most important features (RFE): ['yr' 'temp' 'hum' 'windspeed' 'season_winter' 'workingday_Yes' 'weathersit_Mist' 'hr_cat_Late Night/Early Morning' 'hr_cat_Morning' 'hr_cat_Night']
+ 
+   Reg: Most important features (RFE): ['yr' 'temp' 'hum' 'windspeed' 'season_winter' 'workingday_Yes' 'weathersit_Mist' 'hr_cat_Late Night/Early Morning' 'hr_cat_Morning' 'hr_cat_Night']''')
 
-   st.markdown('''We see that 'yr' 'atemp' 'hum' 'mnth_Jan' 'mnth_Nov' 'mnth_Oct' 'holiday_Yes' 'weekday_Sat' 'weekday_Sun' 'workingday_Yes' 'weathersit_Heavy Rain' 'weathersit_Light Snow' 'hr_cat_Late Night/Early Morning' 'hr_cat_Morning' are selected as the mopst important features''')
+   st.subheader('''
+   Splitting data into train and test with X_imp''')
 
-   st.markdown('''- We create a separate input set with the most important features''')
-   st.markdown('''- Splitting data into train and test with X_imp''')
-   st.markdown('''- We use *MinMaxScaler* to scale only the numerical features''')
-   st.markdown('''- Fitting the model''')
-   st.markdown('''- Plotting the predictions on the test data''')
-   # get the pic1.png 
-   st.image("https://github.com/Traibot/Streamlit_assignment/blob/main/Pic4.png?raw=true")
+   st.markdown('''- Split data into train and test
+   - ((13903, 10), (3476, 10), (13903, 1), (3476, 1))''')
+   st.markdown('''
+   - We use *MinMaxScaler* to scale only the numerical features
+   - Running the model only with important features will help the runtime as this is just to set a baseline
+   - Target transforming the target variables
+   - Log transform y''')
 
+   st.header("Plot log-transformed distribution of casual users")
+   st.image("https://github.com/Traibot/Streamlit_assignment/blob/main/ML3.png?raw=true") 
+
+   st.header("Plot log-transformed distribution of registered users")
+   st.image("https://github.com/Traibot/Streamlit_assignment/blob/main/ML4.png?raw=true")
+
+   st.markdown('''
+   - Fitting the model''')
+
+   st.markdown('''- Define Random Forest Regressor
+   - RandomForestRegressor(bootstrap=True, ccp_alpha=0.0, criterion='mse',
+                      max_depth=None, max_features='auto', max_leaf_nodes=None,
+                      max_samples=None, min_impurity_decrease=0.0,
+                      min_impurity_split=None, min_samples_leaf=1,
+                      min_samples_split=2, min_weight_fraction_leaf=0.0,
+                      n_estimators=100, n_jobs=None, oob_score=False,
+                      random_state=42, verbose=0, warm_start=False)''')
    st.markdown('''- Inverse transforming y to calculate MAE''')
-   st.markdown('''Train score (MAE):  85.66''')
-   st.markdown('''Test score (MAE):  83.395''')
+   st.markdown('''- Calculate MAE for casual users
+   - Test score (MAE):  12.615''')
+   st.markdown('''- Calculate MAE for registered users
+   - Test score (MAE):  64.006''')
+
+   st.markdown('''- Calculate MAE for total users
+   - Calculate MAE for total users''')
+
+   st.subheader("MVM: Hyperparameter tuning")
+   st.markdown('''{'max_depth': 11, 'max_features': 'sqrt'}
+   {'max_depth': 11, 'max_features': 'sqrt'}''')
+
+   st.markdown('''- Define Random Forest Regressor with best parameters
+   - RandomForestRegressor(bootstrap=True, ccp_alpha=0.0, criterion='mse',
+                      max_depth=11, max_features='sqrt', max_leaf_nodes=None,
+                      max_samples=None, min_impurity_decrease=0.0,
+                      min_impurity_split=None, min_samples_leaf=1,
+                      min_samples_split=2, min_weight_fraction_leaf=0.0,
+                      n_estimators=100, n_jobs=None, oob_score=False,
+                      random_state=42, verbose=0, warm_start=False)''')
+   st.markdown('''- Calculate MAE for casual users
+   - Test score (MAE):  13.393''')
+
+   st.markdown('''- Calculate MAE for registered users
+   - Test score (MAE):  63.199''')
+
+   st.markdown('''- Calculate MAE for total users
+   - Test score (MAE):  222.381''')
+
+   st.header("Plot predicted vs actual")
+   st.image("https://github.com/Traibot/Streamlit_assignment/blob/main/ML5.png?raw=true")
+
+   st.subheader("From the plot, we can see that the model is performing well for casual users when the actual values are greater than 2")
+   st.image("https://github.com/Traibot/Streamlit_assignment/blob/main/ML6.png?raw=true")
+
+
+   # get this in two columns
+   st.subheader("The same goes for registered users")
+   col1, col2 = st.columns(2)
+   with col1:
+      st.image("https://github.com/Traibot/Streamlit_assignment/blob/main/ML7.png?raw=true")
+
+   with col2:
+      st.image("https://github.com/Traibot/Streamlit_assignment/blob/main/ML8.png?raw=true")
+
+   st.markdown('''On comparing the two feature importance plots, we can see that the most important features for casual users are temp, humidity, and windspeed. For registered users, this feature importance is less pronounced. We can thus conclude that casual users seem to be taking more rides depending on the weather conditions, while registered users are more likely to take rides irrespective of the weather conditions.''')
+
+   st.header("PyCaret: Predict *casual* and *registered* separately")
+   st.markdown('''PyCaret is an easier and faster way to build machine learning models and will allow us to compare the performance of different models, keeping the observations from the MVM models in mind. We will use PyCaret to predict casual and registered users separately.''')
+
+   st.markdown('''We will be testing our predictive models on the same test dataset in order to compare the results.
+   We will also try to build a predictive model only for <em>cnt</em> and compare the results.''')
+
+   st.code('''data = df.sample(frac=0.9, random_state=786)
+   data_unseen = df.drop(data.index)
+
+   data.reset_index(drop=True, inplace=True)
+   data_unseen.reset_index(drop=True, inplace=True)
+
+   print('Data for Modeling: ' + str(data.shape))
+   print('Unseen Data For Predictions ' + str(data_unseen.shape))''', language='python')
+
+   st.markdown('''Data for Modeling: (15641, 18)
+   Unseen Data For Predictions (1738, 18)''')
+
+   st.subheader("Casual users")
+   st.markdown('''We do a similar test-train split as the MVM
+    
+   2. We remove outliers at 5%
+      
+   3. We ignore the same features as before
+      
+   4. Feature normalization and transformation is set to True
+      
+   5. Feature selections takes too long so we disable it
+      
+   6. We set thresholds for multicollinearity''')
+
+   st.image("https://github.com/Traibot/Streamlit_assignment/blob/main/ML9.png?raw=true")
+
+   # get two columns
+   st.subheader("Create")
+   col1, col2 = st.columns(2)
+   with col1:
+      st.code('''model_cas = create_model('catboost', fold = 10, round = 2)''', language='python')
+      st.image("https://github.com/Traibot/Streamlit_assignment/blob/main/Catboost.png?raw=true")
+   
+   with col2:
+      st.code('''model_cas_2 = create_model('rf', fold = 10, round = 2)''', language='python')
+      st.image("https://github.com/Traibot/Streamlit_assignment/blob/main/rf.png?raw=true")
+
+   col1, col2 = st.columns(2)
+   with col1:
+      st.subheader("Tune")
+      st.code('''tuned_cas = tune_model(model_cas, optimize = 'MAE', fold = 10, choose_better = True)''', language='python')
+      st.image("https://github.com/Traibot/Streamlit_assignment/blob/main/Tune.png?raw=true")
+   
+   with col2:
+      st.subheader("Bagging")
+      st.code('''bagged_cas = ensemble_model(model_cas, fold = 10, choose_better = True)''', language='python')
+      st.image("https://github.com/Traibot/Streamlit_assignment/blob/main/Bagging.png?raw=true")
+
+   st.subheader("Stacking")
+   col1, col2 = st.columns(2)
+   with col1:
+      st.image("https://github.com/Traibot/Streamlit_assignment/blob/main/ML10.png?raw=true")
+
+   with col2:
+      st.image("https://github.com/Traibot/Streamlit_assignment/blob/main/ML11.png?raw=true")
+
+   st.markdown('''Predict on unseen data''')
+   st.image("https://github.com/Traibot/Streamlit_assignment/blob/main/Predict.png?raw=true")
+   
+   st.subheader("Registered users")
+   st.markdown('''
+   - Create
+   - Tune
+   - Bagging
+   - Stacking''')
+
+   # get two columns
+   col1, col2 = st.columns(2)
+   with col1:
+      st.image("https://github.com/Traibot/Streamlit_assignment/blob/main/ML12.png?raw=true")
+   with col2:
+      st.image("https://github.com/Traibot/Streamlit_assignment/blob/main/ML14.png?raw=true")
+
+   st.markdown('''Mean absolute error:  70.52''')
+
+   st.markdown('''Splitting up the regression target to predict registered and casual users separately might make sense business-wise, depending on what the objective of city officials is. The MAE for registered users is worse than that of casual users and that can be attributed to the volume of registered users vs. casual users.
+   However, this format of prediction massively increases the MAE of **total users** and thus we attempt to build a predictive model only for <em>cnt</em> as target to see if we can bring down the MAE and improve other metrics.''')
+
+   st.header("PyCaret: Predict *cnt*")
+
+   st.markdown('''
+   - Create
+   - Tune
+   - Bagging
+   - Stacking''')
+
+   col1, col2 = st.columns(2)
+   with col1:
+      st.image("https://github.com/Traibot/Streamlit_assignment/blob/main/ML15.png?raw=true")
+   with col2:
+      st.image("https://github.com/Traibot/Streamlit_assignment/blob/main/ML17.png?raw=true")
+
+
+   st.title("Conclusion")
+   st.markdown('''While the MAE is for predicting total users is only slightly worse than using a different predictive model for registered and casual users, this could keep flipping between the two approaches. However, the recommendation is to run two separate models as different factors influence registered users and casual users to bike in Washington D.C. 
+   More information could certainly help the model, like costs, usage of other modes of transport in the city, location of bike stations, etc.''')
+
+
+   
+
+
+
 
 
 
