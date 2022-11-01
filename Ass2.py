@@ -1,3 +1,5 @@
+
+
 import streamlit as st
 import os 
 
@@ -53,7 +55,9 @@ with tab1:
 
    # look at the data types
    st.subheader('Data Types')
-   st.write(data.dtypes)
+   # get the data types
+   types= data.dtypes
+   st.write(types)
 
    # get the data describe 
    st.subheader('Data Describe')
@@ -338,12 +342,13 @@ with tab2:
    - Running the model only with important features will help the runtime as this is just to set a baseline
    - Target transforming the target variables
    - Log transform y''')
-
-   st.header("Plot log-transformed distribution of casual users")
-   st.image("https://github.com/Traibot/Streamlit_assignment/blob/main/ML3.png?raw=true") 
-
-   st.header("Plot log-transformed distribution of registered users")
-   st.image("https://github.com/Traibot/Streamlit_assignment/blob/main/ML4.png?raw=true")
+   col1, col2 = st.columns(2)
+   with col1:
+      st.header("Plot log-transformed distribution of casual users")
+      st.image("https://github.com/Traibot/Streamlit_assignment/blob/main/ML3.png?raw=true") 
+   with col2:
+      st.header("Plot log-transformed distribution of registered users")
+      st.image("https://github.com/Traibot/Streamlit_assignment/blob/main/ML4.png?raw=true")
 
    st.markdown('''
    - Fitting the model''')
@@ -386,11 +391,14 @@ with tab2:
    st.markdown('''- Calculate MAE for total users
    - Test score (MAE):  222.381''')
 
-   st.header("Plot predicted vs actual")
-   st.image("https://github.com/Traibot/Streamlit_assignment/blob/main/ML5.png?raw=true")
-
-   st.subheader("From the plot, we can see that the model is performing well for casual users when the actual values are greater than 2")
-   st.image("https://github.com/Traibot/Streamlit_assignment/blob/main/ML6.png?raw=true")
+   st.subheader("Plot predicted vs actual")
+   col1, col2 = st.columns(2)
+   with col1:
+      st.image("https://github.com/Traibot/Streamlit_assignment/blob/main/ML5.png?raw=true")
+   with col2:
+      st.image("https://github.com/Traibot/Streamlit_assignment/blob/main/ML6.png?raw=true")
+   
+   st.markdown("From the plot, we can see that the model is performing well for casual users when the actual values are greater than 2")
 
 
    # get this in two columns
