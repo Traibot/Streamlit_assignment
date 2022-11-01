@@ -49,15 +49,8 @@ with tab1:
    st.write(data[column])
 
    st.markdown('''Next, we do some quick data quality check on the variables, verifying that:
-* All data types are accurate for the fields
 * There are no obvious outliers or erroneous data in the fields
 * There are no nulls present in the entire dataset''')
-
-   # look at the data types
-   st.subheader('Data Types')
-   # get the data types
-   types= data.dtypes
-   st.write(types)
 
    # get the data describe 
    st.subheader('Data Describe')
