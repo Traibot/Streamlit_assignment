@@ -18,8 +18,6 @@ import plotly.express as px
 import warnings
 warnings.filterwarnings('ignore')
 
-
-st.set_page_config(layout="wide")
 # get the title of the page
 st.title('Bike Sharing Demand')
 st.markdown(''' We, team 4, have been hired by the city to build an interactive, insightful and complete report on the bike sharing demand in the cityfor the head of transportation services of the local government. 
