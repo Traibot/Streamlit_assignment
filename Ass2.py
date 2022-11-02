@@ -20,11 +20,11 @@ warnings.filterwarnings('ignore')
 
 # get the title of the page
 st.title('Bike Sharing Demand')
-st.markdown(''' We, team 4, have been hired by the city to build an interactive, insightful and complete report on the bike sharing demand in the cityfor the head of transportation services of the local government. 
-The report will be used by the city to make decisions on how to improve the bike sharing system. ''')
-st.markdown('''As part of the requirements, there are two big points:''')
-st.markdown('''1. The city is looking for a deep analysis of the Bike-sharing service, to understand how the citizens are using the service in order to optimize it. ''')
-st.markdown('''2. The city is looking for a prediction model that can predict total number of bicycle users on an hourly basis. It is said to to help with optimization of bike provisioning and will optimize the costs incurred from the outsourcing transportation company.''')
+#st.markdown(''' We, team 4, have been hired by the city to build an interactive, insightful and complete report on the bike sharing demand in the cityfor the head of transportation services of the local government. 
+#The report will be used by the city to make decisions on how to improve the bike sharing system. ''')
+#st.markdown('''As part of the requirements, there are two big points:''')
+#st.markdown('''1. The city is looking for a deep analysis of the Bike-sharing service, to understand how the citizens are using the service in order to optimize it. ''')
+#st.markdown('''2. The city is looking for a prediction model that can predict total number of bicycle users on an hourly basis. It is said to to help with optimization of bike provisioning and will optimize the costs incurred from the outsourcing transportation company.''')
 
 
 #Import data from repository
@@ -37,44 +37,44 @@ tab1, tab2 = st.tabs(["EDA", "ML"])
 # EDA tab
 with tab1:
    # for any changement in the sidebar selection, the data will be updated
-   st.title('PART I: Exploratory Data Analysis')
+   st.title('Exploratory Data Analysis')
    # explain the analysis 
-   st.markdown('''In this part, we will explore the data to understand the data and the relationship between the variables. We will also try to find some insights that can help us to build a better model. ''')
+   #st.markdown('''In this part, we will explore the data to understand the data and the relationship between the variables. We will also try to find some insights that can help us to build a better model. ''')
 
    # create a filter to select the column you want to see
-   st.subheader('Select the column you want to see')
-   column = st.multiselect('Column', data.columns)
-   st.write(data[column])
+   #st.subheader('Select the column you want to see')
+   #column = st.multiselect('Column', data.columns)
+   #st.write(data[column])
 
-   st.markdown('''Next, we do some quick data quality check on the variables, verifying that:
-* There are no obvious outliers or erroneous data in the fields
-* There are no nulls present in the entire dataset''')
+   #st.markdown('''First, We do some quick data quality check on the variables, verifying that:
+#* There are no obvious outliers or erroneous data in the fields
+#* There are no nulls present in the entire dataset''')
 
    # get the data describe 
-   st.subheader('Data Describe')
-   st.write(data.describe())
+   #st.subheader('Data Describe')
+   #st.write(data.describe())
 
    # get the data shape
-   st.subheader('Data Shape')
-   st.write(data.shape)
+   #st.subheader('Data Shape')
+   #st.write(data.shape)
 
    # get the data null
-   st.subheader('Data Null')
-   st.write(data.isnull().sum())
+   #st.subheader('Data Null')
+   #st.write(data.isnull().sum())
 
-   st.markdown('''Now we create a copy dataframe to obtain insights. Given the dataset and the questions that the administration of Washington D.C. has for us, we ran the following analysis to better understand customer usage. This includes understanding which conditions favor more participation and some ideas that could benefit potential marketing on behalf of the city.''')
+   #st.markdown('''Now we create a copy dataframe to obtain insights. Given the dataset and the questions that the administration of Washington D.C. has for us, we ran the following analysis to better understand customer usage. This includes understanding which conditions favor more participation and some ideas that could benefit potential marketing on behalf of the city.''')
 
-   st.markdown('''# Features to study:
-   * How many people use the service varying the atemp
-   * Casual vs Registered varying by month (maybe some marketing analysis can be done here?)
-   * Humidity vs usage (weather permitting)
-   * Month with most 'ideal' days as established by a metric calculated (spin this as something to market a public bike race or something)
-   * Histogram with most users per hour.
-   * Weekday vs cnt (box plots, one per dow)
-   * Cnt vs weather type in box plots''')
+   #st.markdown('''# Features to study:
+   #* How many people use the service varying the atemp
+   #* Casual vs Registered varying by month (maybe some marketing analysis can be done here?)
+   #* Humidity vs usage (weather permitting)
+   #* Month with most 'ideal' days as established by a metric calculated (spin this as something to market a public bike race or something)
+   #* Histogram with most users per hour.
+   #* Weekday vs cnt (box plots, one per dow)
+   #* Cnt vs weather type in box plots''')
 
-   st.subheader("Insight 1: Usage of service vs variation in feeling temperature")
-   st.markdown('''First, we want to understand which conditions are more favorable for our users. This way we can understand what patterns might lead to maximum usage, as well as better forecasting of client surges in the event that we want to be mindful of our supply. In this case, we are looking for which (felt) temperatures tend to bring in more clients. We bin all felt temperatures into groups of 5 degrees (After denormalizing to use known measurements), then build a histogram to see what the curve is. Apparently, the most preferred temperature of our users is between 31 and 35 degrees Celsius to use the bike service.''')
+   st.subheader("Usage of service vs variation in feeling temperature")
+   #st.markdown('''First, we want to understand which conditions are more favorable for our users. This way we can understand what patterns might lead to maximum usage, as well as better forecasting of client surges in the event that we want to be mindful of our supply. In this case, we are looking for which (felt) temperatures tend to bring in more clients. We bin all felt temperatures into groups of 5 degrees (After denormalizing to use known measurements), then build a histogram to see what the curve is. Apparently, the most preferred temperature of our users is between 31 and 35 degrees Celsius to use the bike service.''')
 
    eda_df = data.copy(deep = True)
 
@@ -91,13 +91,13 @@ with tab1:
    atemp_data_hist = px.histogram(atemp_data, x='atemp_bins', y='cnt', category_orders=dict(atemp_bins=['0-5', '6-10', '11-15', '16-20', '21-25', '26-30', '31-35', '36-40', '41-45', '46-50']))
    atemp_data_hist
    
-   st.subheader("Insight 2: Casual vs Registered users by month")
+   st.subheader("Casual vs Registered users by month")
 
-   st.markdown('''Up next, we compare usage month-over-month of our users, and we split it between those who use our system casually and those who are registered with us. This give us two insights:
-   * There is a much larger proportion of registered users as opposed to casual ones
-   * During high seasons there seems to be more registered users than casual ones from average.
+   # st.markdown('''Up next, we compare usage month-over-month of our users, and we split it between those who use our system casually and those who are registered with us. This give us two insights:
+   # * There is a much larger proportion of registered users as opposed to casual ones
+   # * During high seasons there seems to be more registered users than casual ones from average.
 
-   With user registration, we can better provide our services by being able to anonymously track each one across journeys. This would allow us to understand usage patterns better. Not to mention we can launch a marketing initiative to try to incentivize casual users to join the registry during those high season months, as they seem more prone to do so.''')
+   # With user registration, we can better provide our services by being able to anonymously track each one across journeys. This would allow us to understand usage patterns better. Not to mention we can launch a marketing initiative to try to incentivize casual users to join the registry during those high season months, as they seem more prone to do so.''')
 
    # First, we create a month field to section by first of month (for both years separately):
    eda_df['month_date'] = [pd.to_datetime(str(i)[:8]+'01') for i in eda_df['dteday']]
@@ -111,37 +111,38 @@ with tab1:
    cas_reg_plot
    
 
-   st.subheader("Insight 3: Effect of humidity on everyday usage")
-   st.markdown('''Is humidity a factor in usage? Do our customers think about this before getting on one of our bikes?
-   With a correlation coefficient of -.09, the points out that no, the humidity of a given day is not a contributing factor to using our services. ''')
+   # st.subheader("Insight 3: Effect of humidity on everyday usage")
+   # st.markdown('''Is humidity a factor in usage? Do our customers think about this before getting on one of our bikes?
+   # With a correlation coefficient of -.09, the points out that no, the humidity of a given day is not a contributing factor to using our services. ''')
 
-   # We filter all weather conditions that are logically less than ideal
-   hum_use = eda_df[eda_df.weathersit <= 2]
-   hum_use = hum_use[hum_use.season <=2]
+   # # We filter all weather conditions that are logically less than ideal
+   # hum_use = eda_df[eda_df.weathersit <= 2]
+   # hum_use = hum_use[hum_use.season <=2]
 
-   # We aggregate by day to obtain average humidity and sum of users for each day
-   hum_use = hum_use.groupby('dteday').agg(cnt=('cnt', np.sum), hum=('hum', np.mean))
+   # # We aggregate by day to obtain average humidity and sum of users for each day
+   # hum_use = hum_use.groupby('dteday').agg(cnt=('cnt', np.sum), hum=('hum', np.mean))
 
-   # We run a correlation matrix on humidity and usage
-   hum_use = hum_use[['cnt', 'hum']]
-   hum_use.corr()
+   # # We run a correlation matrix on humidity and usage
+   # hum_use = hum_use[['cnt', 'hum']]
+   # hum_use.corr()
 
-   # get the correlation matrix on humidity and usage 
-   st.subheader('Correlation Matrix')
-   # display it as a heatmap
-   st.write(hum_use.corr())
+   # # get the correlation matrix on humidity and usage 
+   # st.subheader('Correlation Matrix')
+   # # display it as a heatmap
+   # st.write(hum_use.corr())
 
 
-   st.subheader("Insight 4: Which month has more 'ideal' days")
+   st.subheader("Which month has more 'ideal' days")
 
-   st.markdown('''In order to capture more attention of the general public, we came up with the idea of holding public events to incentivize use of our platform and bikes. a 10k bikeathon would likely be a hit with our users, we believe. The issue with this is that we want to maximize the number of participants that day, and the best way to do so is to setting up an event on a day whose weather is ideal for bikers to join. Since we can't predict the exact weather of a day too much in advance, we identified a metric to establish what a 'good day' is, then count these throughout the years to see which month has the higher probability of giving us a 'good day' for a race.
-   The metrics to count a day as good are:
+   st.markdown(#'''In order to capture more attention of the general public, we came up with the idea of holding public events to incentivize use of our platform and bikes. a 10k bikeathon would likely be a hit with our users, we believe. The issue with this is that we want to maximize the number of participants that day, and the best way to do so is to setting up an event on a day whose weather is ideal for bikers to join. Since we can't predict the exact weather of a day too much in advance, we identified a metric to establish what a 'good day' is, then count these throughout the years to see which month has the higher probability of giving us a 'good day' for a race.
+   #The metrics to count a day as good are:
+   '''    
    * Weather is clear, a little mist allowed
    * Felt temperature is between 25 and 35 Celcius, as per our past insight
    * Wind speed is under 25
    * It is not a working day
-
-   Based on our findings, we conclude that the best months for an outdoor event to gather clients would be between June and July. However, data also points to September being acceptable if need be.''')
+   ''')
+   #Based on our findings, we conclude that the best months for an outdoor event to gather clients would be between June and July. However, data also points to September being acceptable if need be.''')
 
    # First we denormalize wind speed to use it with its normal metric.
    eda_df['windspeed_denorm'] = [round(i*67) for i in eda_df['windspeed']]
@@ -178,34 +179,34 @@ with tab1:
    best_mo_hist = px.bar(best_mo, x='mnth', y='good_day')
    best_mo_hist
 
-   st.subheader("Insight 5: Users per hour")
-   st.markdown('''By building a histogram that plots users by hour, we can see a clear bimodal curve. This shows that most users come to our services around 8 in the morning and around 5-6 in the afternoon. This makes perfect sense considering that those are the rush hour times. Perhaps our clients want to avoid car traffic, or they believe this is to be a healthier or greener alternative to driving. Either way, with this information at hand we can likely come up with some marketing scheme, where we give a subscription to users in exchange to reduced rates at peak times or something of the matter. ''')
+   st.subheader("Users per hour")
+   #st.markdown('''By building a histogram that plots users by hour, we can see a clear bimodal curve. This shows that most users come to our services around 8 in the morning and around 5-6 in the afternoon. This makes perfect sense considering that those are the rush hour times. Perhaps our clients want to avoid car traffic, or they believe this is to be a healthier or greener alternative to driving. Either way, with this information at hand we can likely come up with some marketing scheme, where we give a subscription to users in exchange to reduced rates at peak times or something of the matter. ''')
    
    hour_users_hist = px.histogram(eda_df, x='hr', y='cnt')
    hour_users_hist
 
-   st.subheader("Insight 6: Day of Week vs usage")
-   st.markdown('''We wanted to better understand if a given day of week had more general use than another. For context, are our clients using our services more during leisure on the weekends, or is the service more used to commute to work? Turns out this is a little inconclusive, as the behavior between days doesn't vary by a large enough amount to be able to claim so. There seems to be some grater variance in use on the weekends; however, the means are close enough for us to be able to say that there is no discernable pattern across days of week.''')
+   # st.subheader("Insight 6: Day of Week vs usage")
+   # st.markdown('''We wanted to better understand if a given day of week had more general use than another. For context, are our clients using our services more during leisure on the weekends, or is the service more used to commute to work? Turns out this is a little inconclusive, as the behavior between days doesn't vary by a large enough amount to be able to claim so. There seems to be some grater variance in use on the weekends; however, the means are close enough for us to be able to say that there is no discernable pattern across days of week.''')
    
-   # First, we filter to only evaluate the Summer, which is our most active season.
-   dow_use = eda_df[eda_df['season']==2]
+   # # First, we filter to only evaluate the Summer, which is our most active season.
+   # dow_use = eda_df[eda_df['season']==2]
 
-   # We aggregate usage by day of week
-   dow_use = dow_use.groupby(['dteday', 'weekday'], as_index=False).sum()
+   # # We aggregate usage by day of week
+   # dow_use = dow_use.groupby(['dteday', 'weekday'], as_index=False).sum()
 
-   # We display the box plot
-   dow_use_box = px.box(dow_use, x='weekday', y='cnt')
-   dow_use_box
+   # # We display the box plot
+   # dow_use_box = px.box(dow_use, x='weekday', y='cnt')
+   # dow_use_box
 
-   st.subheader("Insight 7: Weather type vs usage")
-   st.markdown('''While this makes logical sense, we wanted to see by what amounts are our customers stopping using our services as weather gets progressively worse. As evidenced in the data in our graph below, there is very little participation when the weather is in a bad shape. However, it is interesting to note that misty days have a definitively smaller amount of customers than one with a fully cleared day. Mist doesn't exactly affect the biking experience, so perhaps this is psychological behavior. Maybe it would be an interesting proposition to study offering discounts in misty days so we can incentivize use instead of seeing the potential go to waste.''')
+   # st.subheader("Insight 7: Weather type vs usage")
+   # st.markdown('''While this makes logical sense, we wanted to see by what amounts are our customers stopping using our services as weather gets progressively worse. As evidenced in the data in our graph below, there is very little participation when the weather is in a bad shape. However, it is interesting to note that misty days have a definitively smaller amount of customers than one with a fully cleared day. Mist doesn't exactly affect the biking experience, so perhaps this is psychological behavior. Maybe it would be an interesting proposition to study offering discounts in misty days so we can incentivize use instead of seeing the potential go to waste.''')
 
-   # First we aggregate the count of users by day and weather conditions to see how they stack against each other
-   weather_use = eda_df.groupby(['dteday', 'weathersit'], as_index=False).sum()
+   # # First we aggregate the count of users by day and weather conditions to see how they stack against each other
+   # weather_use = eda_df.groupby(['dteday', 'weathersit'], as_index=False).sum()
 
-   # Lastly we plot the box plot.
-   weather_use_box = px.box(weather_use, x='weathersit', y='cnt')
-   weather_use_box
+   # # Lastly we plot the box plot.
+   # weather_use_box = px.box(weather_use, x='weathersit', y='cnt')
+   # weather_use_box
 
 
 
@@ -506,15 +507,3 @@ with tab2:
    st.title("Conclusion")
    st.markdown('''While the MAE is for predicting total users is only slightly worse than using a different predictive model for registered and casual users, this could keep flipping between the two approaches. However, the recommendation is to run two separate models as different factors influence registered users and casual users to bike in Washington D.C. 
    More information could certainly help the model, like costs, usage of other modes of transport in the city, location of bike stations, etc.''')
-
-
-   
-
-
-
-
-
-
-
-
-   
